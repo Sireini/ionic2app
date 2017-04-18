@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, LoadingController } from 'ionic-angular';
 import * as $ from 'jquery';
+import localForage from "localforage";
 
 import { TabsPage } from '../tabs/tabs';
 
@@ -9,10 +10,47 @@ import { TabsPage } from '../tabs/tabs';
   templateUrl: 'login.html'
 })
 export class LoginPage {
-  // tokenValue: any;
+   // Create the popup
+    loadingPopup = this.loading.create({
+      content: 'Laden persoonlijk schema...'
+    });
 
   constructor(public navCtrl: NavController, public loading: LoadingController) {
-    
+     
+  }
+
+  ionViewCanEnter() {
+    // Show the popup
+    this.loadingPopup.present();
+
+    setTimeout(() => {
+      this.loadingPopup.dismiss();
+    }, 1000);
+
+    localForage.getItem('didLogin', (err, value) => {
+      if(value){
+        this.navCtrl.push(TabsPage);
+      }
+    });
+  }
+
+  userLogin(tokenValue) {
+    // Show the popup
+    this.loadingPopup.present();
+
+    setTimeout(() => {
+      this.loadingPopup.dismiss();
+    }, 2000);
+
+    localForage.setItem('didLogin', 'true').then(function (value) {
+        // Do other things once the value has been saved.
+        console.log(value);
+    }).catch(function(err) {
+        // This code runs if there were any errors
+        console.log(err);
+    });
+
+    this.getSchema(tokenValue);
   }
 
   getSchema(tokenValue){
@@ -26,30 +64,16 @@ export class LoginPage {
         cache: false,
         success: function(data){
             $('#myDiv').html(data);
+
+            localForage.setItem('getSchema', data).then(function (data) {
+                // Do other things once the value has been saved.
+                console.log(data);
+            }).catch(function(err) {
+                // This code runs if there were any errors
+                console.log(err);
+            });
         }
       });
     }, 2000);
   }
-
-  ionViewLoaded(tokenValue) {
-    // Create the popup
-    let loadingPopup = this.loading.create({
-      content: 'Laden persoonlijk schema...'
-    });
-
-    // Show the popup
-    loadingPopup.present();
-
-    setTimeout(() => {
-      loadingPopup.dismiss();
-    }, 2000);
-
-    this.getSchema(tokenValue);
-  }
-
-  // changeColor(){
-  //   $('#x').text('white');
-  //   console.log('test');
-  // }
-
 }
