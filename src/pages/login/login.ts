@@ -20,15 +20,15 @@ export class LoginPage {
   }
 
   ionViewCanEnter() {
-    // Show the popup
-    this.loadingPopup.present();
-
-    setTimeout(() => {
-      this.loadingPopup.dismiss();
-    }, 1000);
-
     localForage.getItem('didLogin', (err, value) => {
       if(value){
+         // Show the popup
+        this.loadingPopup.present();
+
+        setTimeout(() => {
+          this.loadingPopup.dismiss();
+        }, 1000);
+
         this.navCtrl.push(TabsPage);
       }
     });

@@ -17,7 +17,6 @@ export class HomePage {
   ionViewDidLoad(){
     localForage.getItem('getSchema', (err, data) => {
       if(data){
-        console.log(data);
         $('#myDiv').html(data);
       }
     });
